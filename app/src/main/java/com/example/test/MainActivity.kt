@@ -3,8 +3,10 @@ package com.example.test
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import com.example.test.databinding.ActivityMainBinding
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -16,16 +18,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        val binding = DataBindingUtil.setContentView<ActivityMainBinding>(this,
+            R.layout.activity_main)
 
-        viewModel.getAll().observe(this, Observer {
-            result_text.text = it.toString()
-        })
+        binding.lifecycleOwner = this // LiveData 때문에 사용
 
-        add_button.setOnClickListener {
-            lifecycleScope.launch(Dispatchers.IO) {// 코루틴 이용 비동기 처리, 백그라운드에서 처리
-                viewModel.insert(Todo(todo_edit.text.toString()))
-            }
-        }
+        binding.viewModel = viewModel
     }
 }
